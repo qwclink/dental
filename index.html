@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Магазин</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>Мой Магазин</h1>
+  <nav>
+    <a href="index.html">Товары</a>
+    <a href="basket.html">Корзина</a>
+    <a href="profile.html">Личный кабинет</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Секция товаров -->
+  <section id="products">
+    <h2>Товары</h2>
+    <div class="products">
+      <div class="product" data-id="1" data-price="1200">
+        <img src="https://via.placeholder.com/220x150?text=Товар+1" alt="Товар 1" />
+        <h3>Товар 1</h3>
+        <p>Описание товара 1. Отличное качество и цена.</p>
+        <div class="price">1200 ₽</div>
+        <button class="add-to-cart-btn">Добавить в корзину</button>
+      </div>
+
+      <div class="product" data-id="2" data-price="850">
+        <img src="https://via.placeholder.com/220x150?text=Товар+2" alt="Товар 2" />
+        <h3>Товар 2</h3>
+        <p>Описание товара 2. Очень популярный товар.</p>
+        <div class="price">850 ₽</div>
+        <button class="add-to-cart-btn">Добавить в корзину</button>
+      </div>
+
+      <div class="product" data-id="3" data-price="2300">
+        <img src="https://via.placeholder.com/220x150?text=Товар+3" alt="Товар 3" />
+        <h3>Товар 3</h3>
+        <p>Описание товара 3. Высокое качество и надежность.</p>
+        <div class="price">2300 ₽</div>
+        <button class="add-to-cart-btn">Добавить в корзину</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  &copy; 2025 Мой Магазин. Все права защищены.
+</footer>
+
+<script>
+  // Логика корзины
+  const cart = {};
+  const cartItemsContainer = document.getElementById('cart-items');
+  const cartTotalEl = document.getElementById('cart-total');
+
+  function renderCart() {
+    cartItemsContainer.innerHTML = '';
+    const keys = Object.keys(cart);
+    if (keys.length === 0) {
+      cartItemsContainer.innerHTML = '<p>Ваша корзина пуста.</p>';
+      cartTotalEl.textContent = '';
+      return;
+    }
+
+    let total = 0;
+    keys.forEach(id => {
+      const item = cart[id];
+      const itemTotal = item.price * item.qty;
+      total += itemTotal;
+
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+
+      div.innerHTML = `
+        <div class="cart-item-name">${item.name}</div>
+        <div>
+          <button onclick="changeQty('${id}', -1)">-</button>
+          <span class="cart-item-qty">${item.qty}</span>
+          <button onclick="changeQty('${id}', 1)">+</button>
+        </div>
+        <div class="cart-item-price">${itemTotal} ₽</div>
+      `;
+
+      cartItemsContainer.appendChild(div);
+    });
+
+    cartTotalEl.textContent = `Итого: ${total} ₽`;
+  }
+
+  function changeQty(id, delta) {
+    if (!cart[id]) return;
+    cart[id].qty += delta;
+    if (cart[id].qty <= 0) {
+      delete cart[id];
+    }
+    renderCart();
+  }
+
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const productEl = e.target.closest('.product');
+      const id = productEl.dataset.id;
+      const name = productEl.querySelector('h3').textContent;
+      const price = parseInt(productEl.dataset.price, 10);
+
+      if (cart[id]) {
+        cart[id].qty += 1;
+      } else {
+        cart[id] = { name, price, qty: 1 };
+      }
+      renderCart();
+    });
+  });
+
+  // Инициализация корзины при загрузке страницы
+  renderCart();
+</script>
+
+</body>
+</html>
